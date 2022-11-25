@@ -2,23 +2,45 @@ syntax="proto3";
 
 package protos;
 
-import "protos/pagination.proto";
+option go_package = "./pb";
 
-option go_package = "/pb";
+import "google/api/annotations.proto";
 
 service ProductService {
-    rpc GetProducts(Empty) returns (Products);
-    rpc GetProduct(Id) returns (Product);
-    rpc CreateProduct(Product) returns (Id);
-    rpc UpdateProduct(Product) returns (Status);
-    rpc DeleteProduct(Id) returns (Status);
+    rpc GetProduct(Id) returns (ResponseProduct) {
+        option (google.api.http) = {
+            get: "/v1/getProduct/{id}"
+        };
+    }
+    rpc CreateProduct(RequestProduct) returns (ResponseProduct) {
+        option (google.api.http) = {
+            post: "/v1/createProduct"
+        };
+    }
+    rpc UpdateProduct(RequestProduct) returns (ResponseProduct) {
+        option (google.api.http) = {
+            put: "/v1/updateProduct"
+        };
+    }
+    rpc DeleteProduct(Id) returns (ResponseProduct) {
+        option (google.api.http) = {
+            delete: "/v1/deleteProduct/{id}"
+        };
+    }
 }
 
-message Empty {}
+message RequestProduct {
+    string name = 1;
+    double price = 2;
+    uint32 stock = 3;
+    Category category = 4;
+}
 
-message Products {
-    Pagination pagination = 1;
-    repeated Product data = 2;
+message ResponseProduct {
+    string status = 1;
+    string description = 2;
+    string detail = 3;
+    Product responseData = 4;
 }
 
 message Product {
@@ -33,11 +55,8 @@ message Category {
     uint32 id = 1;
     string name = 2;
 }
+
 message Id {
     uint32 id = 1;
-}
-
-message Status {
-    uint32 status = 1;
 }
 

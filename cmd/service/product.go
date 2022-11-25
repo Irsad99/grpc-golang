@@ -2,8 +2,7 @@ package service
 
 import (
 	"context"
-	"grpc/pb"
-	"log"
+	"grpc/cmd/pb"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -15,49 +14,9 @@ type ProductService struct {
 	DB *gorm.DB
 }
 
-func (p *ProductService) GetProducts(context.Context, *pb.Empty) (*pb.Products, error) {
+func (p *ProductService) GetProduct(ctx context.Context, id *pb.Id) (*pb.ResponseProduct, error) {
 
-	var products []*pb.Product
-
-	rows, err := p.DB.Table(`public.products`).
-		Joins(`LEFT JOIN public.categories ON categories.id = products.category_id`).
-		Select(`products.id, products."name", products.price, products.stock, categories.id, categories.name`).Rows()
-
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var product pb.Product
-		var category pb.Category
-
-		if err := rows.Scan(&product.Id, &product.Name,
-			&product.Price, &product.Stock, &category.Id,
-			&category.Name); err != nil {
-			log.Fatalf("Gagal mengambil row data %v", err.Error())
-		}
-
-		product.Category = &category
-		products = append(products, &product)
-	}
-
-	res := &pb.Products{
-		Pagination: &pb.Pagination{
-			Total:       2,
-			PerPage:     1,
-			CurrentPage: 1,
-			LastPage:    1,
-		},
-		Data: products,
-	}
-
-	return res, nil
-}
-
-func (p *ProductService) GetProduct(ctx context.Context, id *pb.Id) (*pb.Product, error) {
-
-	rows := p.DB.Table(`public.products`).
+	row := p.DB.Table(`public.products`).
 		Joins(`LEFT JOIN public.categories ON categories.id = products.category_id`).
 		Select(`products.id, products."name", products.price, products.stock, categories.id, categories.name`).
 		Where(`products.id = ?`, id.GetId()).Row()
@@ -65,7 +24,7 @@ func (p *ProductService) GetProduct(ctx context.Context, id *pb.Id) (*pb.Product
 	var product pb.Product
 	var category pb.Category
 
-	if err := rows.Scan(&product.Id, &product.Name,
+	if err := row.Scan(&product.Id, &product.Name,
 		&product.Price, &product.Stock, &category.Id,
 		&category.Name); err != nil {
 		return nil, status.Error(codes.NotFound, err.Error())
@@ -73,12 +32,20 @@ func (p *ProductService) GetProduct(ctx context.Context, id *pb.Id) (*pb.Product
 
 	product.Category = &category
 
-	return &product, nil
+	response := &pb.ResponseProduct{
+		Status: "000",
+		Description: "Success",
+		Detail: "Get Data Product Successfully",
+		ResponseData: &product,
+	}
+
+	return response, nil
 }
 
-func (p *ProductService) CreateProduct(ctx context.Context, req *pb.Product) (*pb.Id, error) {
+func (p *ProductService) CreateProduct(ctx context.Context, req *pb.RequestProduct) (*pb.ResponseProduct, error) {
 
-	var Response pb.Id
+	var product pb.Product
+	var category pb.Category
 
 	err := p.DB.Transaction(func(tx *gorm.DB) error {
 
@@ -88,13 +55,11 @@ func (p *ProductService) CreateProduct(ctx context.Context, req *pb.Product) (*p
 		}
 
 		product := struct {
-			Id          uint64
 			Name        string
 			Price       float64
 			Stock       uint32
 			Category_id uint32
 		}{
-			Id:          req.GetId(),
 			Name:        req.GetName(),
 			Price:       req.GetPrice(),
 			Stock:       req.GetStock(),
@@ -105,8 +70,6 @@ func (p *ProductService) CreateProduct(ctx context.Context, req *pb.Product) (*p
 			return err
 		}
 
-		Response.Id = uint32(product.Id)
-
 		return nil
 	})
 
@@ -116,12 +79,33 @@ func (p *ProductService) CreateProduct(ctx context.Context, req *pb.Product) (*p
 		)
 	}
 
-	return &Response, nil
+	row := p.DB.Table(`public.products`).
+		Joins(`LEFT JOIN public.categories ON categories.id = products.category_id`).
+		Select(`products.id, products."name", products.price, products.stock, categories.id, categories.name`).
+		Where(`products.name = ?`, req.GetName()).Row()
+
+	if err := row.Scan(&product.Id, &product.Name,
+		&product.Price, &product.Stock, &category.Id,
+		&category.Name); err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	product.Category = &category
+
+	response := &pb.ResponseProduct{
+		Status: "000",
+		Description: "Success",
+		Detail: "Create Data Product Successfully",
+		ResponseData: &product,
+	}
+
+	return response, nil
 }
 
-func (p *ProductService) UpdateProduct(ctx context.Context, req *pb.Product) (*pb.Status, error) {
-	
-	var Response pb.Status
+func (p *ProductService) UpdateProduct(ctx context.Context, req *pb.RequestProduct) (*pb.ResponseProduct, error) {
+
+	var product pb.Product
+	var category pb.Category
 
 	err := p.DB.Transaction(func(tx *gorm.DB) error {
 
@@ -131,24 +115,20 @@ func (p *ProductService) UpdateProduct(ctx context.Context, req *pb.Product) (*p
 		}
 
 		product := struct {
-			Id          uint64
 			Name        string
 			Price       float64
 			Stock       uint32
 			Category_id uint32
 		}{
-			Id:          req.GetId(),
 			Name:        req.GetName(),
 			Price:       req.GetPrice(),
 			Stock:       req.GetStock(),
 			Category_id: category.GetId(),
 		}
 
-		if err := tx.Table(`public.products`).Where(`products.id = ?`, product.Id).Updates(&product).Error; err != nil {
+		if err := tx.Table(`public.products`).Where(`products.name = ?`, product.Name).Updates(&product).Error; err != nil {
 			return err
 		}
-
-		Response.Status = 1
 
 		return nil
 	})
@@ -159,17 +139,57 @@ func (p *ProductService) UpdateProduct(ctx context.Context, req *pb.Product) (*p
 		)
 	}
 
-	return &Response, nil
+	row := p.DB.Table(`public.products`).
+		Joins(`LEFT JOIN public.categories ON categories.id = products.category_id`).
+		Select(`products.id, products."name", products.price, products.stock, categories.id, categories.name`).
+		Where(`products.name = ?`, req.GetName()).Row()
+
+	if err := row.Scan(&product.Id, &product.Name,
+		&product.Price, &product.Stock, &category.Id,
+		&category.Name); err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	product.Category = &category
+
+	response := &pb.ResponseProduct{
+		Status: "000",
+		Description: "Success",
+		Detail: "Update Data Product Successfully",
+		ResponseData: &product,
+	}
+
+	return response, nil
 }
 
-func (p *ProductService) DeleteProduct(ctx context.Context, id *pb.Id) (*pb.Status, error) {
-	
-	var Response pb.Status
+func (p *ProductService) DeleteProduct(ctx context.Context, id *pb.Id) (*pb.ResponseProduct, error) {
+
+	var product pb.Product
+	var category pb.Category
+
+	row := p.DB.Table(`public.products`).
+		Joins(`LEFT JOIN public.categories ON categories.id = products.category_id`).
+		Select(`products.id, products."name", products.price, products.stock, categories.id, categories.name`).
+		Where(`products.id = ?`, id.GetId()).Row()
+
+	if err := row.Scan(&product.Id, &product.Name,
+		&product.Price, &product.Stock, &category.Id,
+		&category.Name); err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	product.Category = &category
+
+	response := &pb.ResponseProduct{
+		Status: "000",
+		Description: "Success",
+		Detail: "Update Data Product Successfully",
+		ResponseData: &product,
+	}
 
 	if err := p.DB.Table(`public.products`).Where(`products.id = ?`, id.GetId()).Delete(nil).Error; err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	Response.Status = 1
 
-	return &Response, nil
+	return response, nil
 }
