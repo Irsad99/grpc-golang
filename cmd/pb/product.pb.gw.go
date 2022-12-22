@@ -221,7 +221,7 @@ func RegisterProductServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/protos.ProductService/GetProduct", runtime.WithHTTPPathPattern("/v1/getProduct/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.ProductService/GetProduct", runtime.WithHTTPPathPattern("/v1/getProduct/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -246,7 +246,7 @@ func RegisterProductServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/protos.ProductService/CreateProduct", runtime.WithHTTPPathPattern("/v1/createProduct"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.ProductService/CreateProduct", runtime.WithHTTPPathPattern("/v1/createProduct"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -271,7 +271,7 @@ func RegisterProductServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/protos.ProductService/UpdateProduct", runtime.WithHTTPPathPattern("/v1/updateProduct"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.ProductService/UpdateProduct", runtime.WithHTTPPathPattern("/v1/updateProduct"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -296,7 +296,7 @@ func RegisterProductServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/protos.ProductService/DeleteProduct", runtime.WithHTTPPathPattern("/v1/deleteProduct/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.ProductService/DeleteProduct", runtime.WithHTTPPathPattern("/v1/deleteProduct/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -360,7 +360,7 @@ func RegisterProductServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/protos.ProductService/GetProduct", runtime.WithHTTPPathPattern("/v1/getProduct/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.ProductService/GetProduct", runtime.WithHTTPPathPattern("/v1/getProduct/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -382,7 +382,7 @@ func RegisterProductServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/protos.ProductService/CreateProduct", runtime.WithHTTPPathPattern("/v1/createProduct"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.ProductService/CreateProduct", runtime.WithHTTPPathPattern("/v1/createProduct"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -404,7 +404,7 @@ func RegisterProductServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/protos.ProductService/UpdateProduct", runtime.WithHTTPPathPattern("/v1/updateProduct"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.ProductService/UpdateProduct", runtime.WithHTTPPathPattern("/v1/updateProduct"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -426,7 +426,7 @@ func RegisterProductServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/protos.ProductService/DeleteProduct", runtime.WithHTTPPathPattern("/v1/deleteProduct/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/pb.ProductService/DeleteProduct", runtime.WithHTTPPathPattern("/v1/deleteProduct/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
