@@ -33,9 +33,9 @@ func (p *ProductService) GetProduct(ctx context.Context, id *pb.Id) (*pb.Respons
 	product.Category = &category
 
 	response := &pb.ResponseProduct{
-		Status: "000",
-		Description: "Success",
-		Detail: "Get Data Product Successfully",
+		Status:       "000",
+		Description:  "Success",
+		Detail:       "Get Data Product Successfully",
 		ResponseData: &product,
 	}
 
@@ -93,9 +93,9 @@ func (p *ProductService) CreateProduct(ctx context.Context, req *pb.RequestProdu
 	product.Category = &category
 
 	response := &pb.ResponseProduct{
-		Status: "000",
-		Description: "Success",
-		Detail: "Create Data Product Successfully",
+		Status:       "000",
+		Description:  "Success",
+		Detail:       "Create Data Product Successfully",
 		ResponseData: &product,
 	}
 
@@ -153,9 +153,9 @@ func (p *ProductService) UpdateProduct(ctx context.Context, req *pb.RequestProdu
 	product.Category = &category
 
 	response := &pb.ResponseProduct{
-		Status: "000",
-		Description: "Success",
-		Detail: "Update Data Product Successfully",
+		Status:       "000",
+		Description:  "Success",
+		Detail:       "Update Data Product Successfully",
 		ResponseData: &product,
 	}
 
@@ -181,9 +181,9 @@ func (p *ProductService) DeleteProduct(ctx context.Context, id *pb.Id) (*pb.Resp
 	product.Category = &category
 
 	response := &pb.ResponseProduct{
-		Status: "000",
-		Description: "Success",
-		Detail: "Update Data Product Successfully",
+		Status:       "000",
+		Description:  "Success",
+		Detail:       "Delete Data Product Successfully",
 		ResponseData: &product,
 	}
 

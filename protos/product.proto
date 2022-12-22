@@ -1,10 +1,12 @@
 syntax="proto3";
 
-package protos;
+package pb;
 
-option go_package = "./pb";
+option go_package = "grpc/cmd/pb";
 
 import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "validate/validate.proto";
 
 service ProductService {
     rpc GetProduct(Id) returns (ResponseProduct) {
@@ -30,7 +32,7 @@ service ProductService {
 }
 
 message RequestProduct {
-    string name = 1;
+    string name = 1 [(validate.rules).string = {min_len : 10, max_len : 80}];
     double price = 2;
     uint32 stock = 3;
     Category category = 4;
@@ -45,7 +47,7 @@ message ResponseProduct {
 
 message Product {
     uint64 id = 1;
-    string name = 2;
+    string name = 2[(validate.rules).string = {min_len : 10, max_len : 80}] ;
     double price = 3;
     uint32 stock = 4;
     Category category = 5;

@@ -4,11 +4,12 @@ import (
 	"context"
 	"grpc/cmd/config"
 	"grpc/cmd/service"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"net"
 	"net/http"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"google.golang.org/grpc/credentials/insecure"
 
 	productPb "grpc/cmd/pb"
 
@@ -32,7 +33,7 @@ func main() {
 	productPb.RegisterProductServiceServer(grpcServer, &productService)
 
 	log.Printf("Server started at %v", netListen.Addr())
-	go func ()  {
+	go func() {
 		if err := grpcServer.Serve(netListen); err != nil {
 			log.Fatalf("Failed to serve %v", err.Error())
 		}
